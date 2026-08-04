@@ -17,8 +17,7 @@ entrypoint = main.py
 # List every Python package the app imports.
 # opuslib needs the native libopus – handled via android.add_aars or
 # a pre-built .so; see the note below the file.
-requirements =
-    python3,
+requirements = python3==3.7.6,hostpython3==3.7.6, kivy, pillow
     kivy==2.3.0,
     numpy,
     sounddevice,
