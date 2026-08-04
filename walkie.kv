@@ -1,0 +1,393 @@
+#:kivy 2.0
+#:import Factory kivy.factory.Factory
+
+# ─────────────────────────────────────────
+#  Re-usable colour / size constants
+# ─────────────────────────────────────────
+#:set CLR_BG          (0.95, 0.95, 0.97, 1)
+#:set CLR_CARD        (1, 1, 1, 1)
+#:set CLR_ORANGE      (1, 0.45, 0.1, 1)
+#:set CLR_ORANGE_DK   (0.85, 0.32, 0.04, 1)
+#:set CLR_GRAY        (0.62, 0.62, 0.65, 1)
+#:set CLR_GRAY_LT     (0.88, 0.88, 0.90, 1)
+#:set CLR_TEXT        (0.13, 0.13, 0.15, 1)
+#:set CLR_TEXT_MUTED  (0.50, 0.50, 0.53, 1)
+#:set CLR_WHITE       (1, 1, 1, 1)
+#:set CLR_GREEN       (0.18, 0.72, 0.42, 1)
+
+# ─────────────────────────────────────────
+#  PeerRow  –  one row in the peers list
+# ─────────────────────────────────────────
+<PeerRow@BoxLayout>:
+    name:         ''
+    talking:      False
+    size_hint_y:  None
+    height:       dp(56)
+    padding:      dp(10), dp(6)
+    spacing:      dp(10)
+
+    canvas.before:
+        Color:
+            rgba: (1, 0.93, 0.87, 1) if self.talking else CLR_CARD
+        RoundedRectangle:
+            pos:  self.pos
+            size: self.size
+            radius: [dp(12)]
+
+    # avatar circle
+    Widget:
+        size_hint: None, None
+        size: dp(36), dp(36)
+        canvas:
+            Color:
+                rgba: CLR_ORANGE if root.talking else CLR_GRAY_LT
+            Ellipse:
+                pos:  self.pos
+                size: self.size
+            Color:
+                rgba: CLR_WHITE
+            # simple person icon drawn with two ellipses
+            Ellipse:
+                pos:  self.x + dp(11), self.y + dp(19)
+                size: dp(14), dp(14)
+            RoundedRectangle:
+                pos:  self.x + dp(7), self.y + dp(4)
+                size: dp(22), dp(14)
+                radius: [dp(7), dp(7), 0, 0]
+
+    # peer name label
+    Label:
+        text:      root.name
+        color:     CLR_TEXT
+        font_size: sp(14)
+        halign:    'left'
+        valign:    'middle'
+        text_size: self.size
+
+    Widget:
+        size_hint_x: None
+        width: dp(8)
+
+    # speaker icon shown while peer is talking
+    Label:
+        size_hint: None, None
+        size: dp(24), dp(24)
+        text:      '\U0001f50a' if root.talking else '\u2713'
+        font_size: sp(16)
+        color:     CLR_ORANGE if root.talking else CLR_GREEN
+        opacity:   1
+
+# ─────────────────────────────────────────
+#  TopBar  –  hamburger + state pill
+# ─────────────────────────────────────────
+<TopBar@BoxLayout>:
+    size_hint_y: None
+    height:      dp(52)
+    padding:     dp(12), dp(8)
+    spacing:     dp(8)
+    orientation: 'horizontal'
+
+    canvas.before:
+        Color:
+            rgba: CLR_CARD
+        Rectangle:
+            pos:  self.pos
+            size: self.size
+
+    # hamburger
+    Label:
+        size_hint: None, None
+        size:      dp(32), dp(32)
+        text:      '\u2630'
+        font_size: sp(20)
+        color:     CLR_TEXT
+
+    Widget:
+
+    # state pill  (id lives on RootWidget so app.py can reach it)
+    BoxLayout:
+        id: state_pill
+        size_hint: None, None
+        size: dp(200), dp(32)
+        padding: dp(10), dp(4)
+        spacing: dp(6)
+        canvas.before:
+            Color:
+                rgba: CLR_GRAY_LT
+            RoundedRectangle:
+                pos:  self.pos
+                size: self.size
+                radius: [dp(16)]
+
+        # wi-fi icon
+        Label:
+            size_hint: None, None
+            size: dp(18), dp(18)
+            text: '\U0001f4f6'
+            font_size: sp(13)
+
+        Label:
+            id: state_label
+            text: 'STATE: IDLE'
+            font_size: sp(12)
+            bold: True
+            color: CLR_TEXT
+            halign: 'left'
+            valign: 'middle'
+            text_size: self.size
+
+# ─────────────────────────────────────────
+#  RootWidget  –  full screen
+# ─────────────────────────────────────────
+<RootWidget>:
+    orientation: 'vertical'
+    spacing:     0
+
+    canvas.before:
+        Color:
+            rgba: CLR_BG
+        Rectangle:
+            pos:  self.pos
+            size: self.size
+
+    # ── top bar ──────────────────────────
+    BoxLayout:
+        size_hint_y: None
+        height:      dp(52)
+        padding:     dp(12), dp(8)
+        spacing:     dp(8)
+        orientation: 'horizontal'
+
+        canvas.before:
+            Color:
+                rgba: CLR_CARD
+            Rectangle:
+                pos:  self.pos
+                size: self.size
+
+        Label:
+            size_hint: None, None
+            size:      dp(32), dp(32)
+            text:      '\u2630'
+            font_size: sp(22)
+            color:     CLR_TEXT
+
+        Widget:
+
+        BoxLayout:
+            size_hint: None, None
+            size: dp(210), dp(32)
+            padding: dp(10), dp(4)
+            spacing: dp(6)
+            canvas.before:
+                Color:
+                    rgba: CLR_GRAY_LT
+                RoundedRectangle:
+                    pos:  self.pos
+                    size: self.size
+                    radius: [dp(16)]
+
+            Label:
+                size_hint: None, None
+                size: dp(18), dp(18)
+                text: '\U0001f4f6'
+                font_size: sp(13)
+                color: CLR_TEXT_MUTED
+
+            Label:
+                id: state_label
+                text: 'STATE: IDLE'
+                font_size: sp(12)
+                bold: True
+                color: CLR_TEXT
+                halign: 'left'
+                valign: 'middle'
+                text_size: self.size
+
+    # ── scrollable body ──────────────────
+    ScrollView:
+        do_scroll_x: False
+
+        BoxLayout:
+            orientation:  'vertical'
+            size_hint_y:  None
+            height:       self.minimum_height
+            padding:      dp(16)
+            spacing:      dp(14)
+
+            # ── CONNECTED PEERS card ──────
+            BoxLayout:
+                orientation: 'vertical'
+                size_hint_y: None
+                height:      self.minimum_height
+                spacing:     dp(8)
+
+                Label:
+                    text:      'CONNECTED PEERS'
+                    font_size: sp(11)
+                    bold:      True
+                    color:     CLR_TEXT_MUTED
+                    size_hint_y: None
+                    height:    dp(20)
+                    halign:    'left'
+                    text_size: self.size
+
+                # peers list box
+                BoxLayout:
+                    id:          peers_box
+                    orientation: 'vertical'
+                    size_hint_y: None
+                    height:      self.minimum_height
+                    spacing:     dp(6)
+
+                    # placeholder shown when no peers yet
+                    Label:
+                        id:        empty_peers_label
+                        text:      'Waiting for connections...\nEnable Hotspot on Host Device.'
+                        font_size: sp(13)
+                        color:     CLR_TEXT_MUTED
+                        halign:    'center'
+                        valign:    'middle'
+                        size_hint_y: None
+                        height:    dp(64)
+                        canvas.before:
+                            Color:
+                                rgba: CLR_CARD
+                            RoundedRectangle:
+                                pos:  self.pos
+                                size: self.size
+                                radius: [dp(12)]
+
+            # ── PTT / TRANSMITTING card ───
+            BoxLayout:
+                id:          ptt_card
+                orientation: 'vertical'
+                size_hint_y: None
+                height:      dp(200)
+                padding:     dp(0)
+                spacing:     dp(0)
+
+                canvas.before:
+                    Color:
+                        rgba: CLR_GRAY_LT
+                    RoundedRectangle:
+                        pos:  self.pos
+                        size: self.size
+                        radius: [dp(20)]
+
+                # PTT button (fills the card, touch events go to app)
+                Button:
+                    id:            ptt_button
+                    text:          'PUSH-TO-TALK\n\nHOLD TO TALK'
+                    font_size:     sp(18)
+                    bold:          True
+                    color:         CLR_TEXT
+                    background_normal:   ''
+                    background_color:    (0,0,0,0)
+                    on_press:      app.on_ptt_press()
+                    on_release:    app.on_ptt_release()
+
+                    canvas.before:
+                        Color:
+                            rgba: (0,0,0,0)
+                        RoundedRectangle:
+                            pos:  self.pos
+                            size: self.size
+                            radius: [dp(20)]
+
+            # ── TRANSMITTING overlay card ─
+            # (hidden by default; shown from Python when talking)
+            BoxLayout:
+                id:          tx_card
+                orientation: 'vertical'
+                size_hint_y: None
+                height:      dp(200)
+                padding:     dp(16)
+                spacing:     dp(8)
+                opacity:     0
+                disabled:    True
+
+                canvas.before:
+                    Color:
+                        rgba: CLR_ORANGE
+                    RoundedRectangle:
+                        pos:  self.pos
+                        size: self.size
+                        radius: [dp(20)]
+
+                Label:
+                    text:      'TRANSMITTING...'
+                    font_size: sp(20)
+                    bold:      True
+                    color:     CLR_WHITE
+
+                Label:
+                    text:      '\U0001f3a4'
+                    font_size: sp(48)
+                    color:     CLR_WHITE
+                    size_hint_y: None
+                    height:    dp(60)
+
+                # fake waveform  (5 bars)
+                BoxLayout:
+                    size_hint_y: None
+                    height:      dp(32)
+                    spacing:     dp(6)
+                    padding:     dp(30), 0
+
+                    canvas.before:
+                        Color:
+                            rgba: (1,1,1,0.5)
+
+                    Label:
+                        text: '▁▃▅▇▅▃▁▃▅▇▅▃▁'
+                        font_size: sp(16)
+                        color: CLR_WHITE
+
+                Label:
+                    text:      'YOU ARE TALKING'
+                    font_size: sp(13)
+                    bold:      True
+                    color:     CLR_WHITE
+
+            # ── RECEIVING AUDIO label ─────
+            Label:
+                id:          rx_label
+                text:        ''
+                font_size:   sp(14)
+                color:       CLR_TEXT_MUTED
+                size_hint_y: None
+                height:      dp(28)
+                halign:      'center'
+                text_size:   self.size
+
+    # ── bottom button ─────────────────────
+    BoxLayout:
+        size_hint_y: None
+        height:      dp(72)
+        padding:     dp(20), dp(12)
+
+        canvas.before:
+            Color:
+                rgba: CLR_CARD
+            Rectangle:
+                pos:  self.pos
+                size: self.size
+
+        Button:
+            id:                  hotspot_button
+            text:                'START DISCOVERY'
+            font_size:           sp(15)
+            bold:                True
+            color:               CLR_TEXT
+            background_normal:   ''
+            background_color:    (0,0,0,0)
+            on_press:            app.toggle_discovery()
+
+            canvas.before:
+                Color:
+                    rgba: CLR_GRAY_LT
+                RoundedRectangle:
+                    pos:    self.pos
+                    size:   self.size
+                    radius: [dp(24)]
